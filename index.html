@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AS_Web — сайты для малого бизнеса</title>
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<style>
+  /* ЦВЕТА: все цвета сайта лежат здесь, в переменных. Для тёмной темы значения меняются. */
+  :root{--bg:#faf8f4;--card:#ffffff;--fg:#1f2430;--muted:#5d6472;--line:#e4dfd5;--accent:#2f6f5e;--accent-fg:#ffffff;
+        box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#15181d;--card:#1e2229;--fg:#eceae4;--muted:#a3a9b4;--line:#2e343e;--accent:#5fb89f;--accent-fg:#10231d;color-scheme:dark}}
+  :root[data-theme="dark"]{--bg:#15181d;--card:#1e2229;--fg:#eceae4;--muted:#a3a9b4;--line:#2e343e;--accent:#5fb89f;--accent-fg:#10231d;color-scheme:dark}
+  html{height:100%;scroll-behavior:smooth;scroll-padding-top:env(safe-area-inset-top,0px)}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.6}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+  .muted{color:var(--muted)}
+  .btn{display:inline-block;background:var(--accent);color:var(--accent-fg);padding:12px 22px;border-radius:12px;font-weight:600;border:0;cursor:pointer;text-align:center;transition:opacity .2s}
+  .btn:hover{opacity:.85}
+  .btn-ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+  .field{width:100%;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:12px;padding:12px;font:inherit}
+  .field:focus{outline:2px solid var(--accent);outline-offset:1px}
+  /* Плавное появление при смене страницы */
+  .view{animation:fadeIn .35s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  /* Панель «Вернуться» у мини-сайтов */
+  .backbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:#111827;color:#fff;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:14px}
+  .backbar button{background:#fff;color:#111827;border:0;border-radius:10px;padding:8px 14px;font-weight:700;cursor:pointer}
+  /* Мини-сайты: у каждого свои фиксированные цвета, как у отдельного сайта */
+  .site-auto{--s-bg:#0f172a;--s-card:#1e293b;--s-fg:#f1f5f9;--s-mut:#94a3b8;--s-acc:#f97316}
+  .site-clean{--s-bg:#f0f9ff;--s-card:#ffffff;--s-fg:#0c4a6e;--s-mut:#52718a;--s-acc:#0ea5e9}
+  .site-shop{--s-bg:#fbf3ea;--s-card:#ffffff;--s-fg:#3b2a20;--s-mut:#7a6455;--s-acc:#b4532a}
+  .site{background:var(--s-bg);color:var(--s-fg);min-height:100vh}
+  .site .s-card{background:var(--s-card);border-radius:16px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+  .site .s-mut{color:var(--s-mut)}
+  .site .s-btn{display:inline-block;background:var(--s-acc);color:#fff;padding:12px 22px;border-radius:12px;font-weight:700;border:0;cursor:pointer}
+  .site .s-btn:hover{filter:brightness(1.1)}
+  .site .s-field{width:100%;border:1px solid #cbd5e1;border-radius:12px;padding:12px;font:inherit;background:#fff;color:#111}
+  .site .s-acc{color:var(--s-acc)}
+</style>
+</head>
+<body>
+
+<!-- =====================================================
+  КАК ЭТО РАБОТАЕТ (для новичка):
+  Весь сайт — один файл. Внутри 4 блока-«страницы»:
+  view-home (главная), view-auto, view-clean, view-shop.
+  Одновременно виден только один. Остальные скрыты классом "hidden".
+  Кнопки с атрибутом data-open="auto" вызывают функцию show('auto'),
+  а кнопки с data-open="home" возвращают на главную.
+  ===================================================== -->
+
+<!-- ================= СТРАНИЦА 1: ГЛАВНАЯ ================= -->
+<div id="view-home" class="view">
+  <header class="sticky top-0 z-20 border-b" style="background:var(--bg);border-color:var(--line);top:env(safe-area-inset-top,0px)">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="#top" class="font-bold text-lg leading-tight" style="color:var(--accent)">AS_Web<span class="muted font-normal text-xs block">Алексей Шачнев</span></a>
+      <nav class="flex gap-4 text-sm">
+        <a href="#about">Обо мне</a><a href="#work">Работы</a><a href="#contact">Связаться</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top" class="max-w-5xl mx-auto px-4">
+    <!-- Первый экран -->
+    <section class="py-14 md:py-20">
+      <p class="muted mb-3">Алексей Шачнев · веб-разработчик</p>
+      <h1 class="text-3xl md:text-5xl font-bold leading-tight mb-5">Делаю сайты для небольшого бизнеса — понятно, аккуратно и без сюрпризов</h1>
+      <p class="muted text-lg max-w-2xl mb-8">Автосервис, мастерская, небольшой магазин или своя услуга — сделаю сайт, который приведёт к вам клиентов. Объясню всё простыми словами и без лишней терминологии.</p>
+      <div class="flex flex-wrap gap-3">
+        <a href="#work" class="btn">Посмотреть работы</a>
+        <a href="#contact" class="btn btn-ghost">Написать мне</a>
+      </div>
+    </section>
+
+    <!-- Обо мне -->
+    <section id="about" class="py-10">
+  <h2 class="text-2xl font-bold mb-4">Кто я</h2>
+  <div class="card">
+    <p class="mb-4">Привет, меня зовут Алексей. По профессии я системный администратор, и это настоящая работа, а не красивая обёртка: серверы, сети, железо.</p>
+    <p class="mb-4">Но мне надоело только поддерживать то, что уже кем-то сделано. Захотелось создавать самому: придумать страницу, написать код и увидеть, как из пустого файла получается готовый сайт. Веб-разработка даёт мне эту свободу, поэтому я решил сменить профессию.</p>
+    <p class="muted">Я только начинаю этот путь и не буду делать вид, что знаю всё. Зато опыт админа мне правда помогает: я понимаю, как работают хостинг и домены, привык делать аккуратно и думать о том, чтобы сайт стабильно открывался. А главное, мне искренне нравится делать небольшие аккуратные сайты, и я стараюсь, чтобы каждый получался таким, которым не стыдно поделиться.</p>
+  </div>
+
+      <div class="grid md:grid-cols-3 gap-4 mt-6">
+        <div class="card">
+          <h3 class="font-semibold mb-2">Объясняю по-человечески</h3>
+          <p class="muted text-sm">Без сложного ИТ-жаргона и непонятных терминов. Говорю понятным языком: что делаю, зачем это нужно и сколько стоит.</p>
+        </div>
+        <div class="card">
+          <h3 class="font-semibold mb-2">Цена известна заранее</h3>
+          <p class="muted text-sm">Сначала мы подробно обсуждаем задачу, а потом я называю финальную сумму. Никаких внезапных доплат «по ходу работы».</p>
+        </div>
+        <div class="card">
+          <h3 class="font-semibold mb-2">Сайт остаётся вашим</h3>
+          <p class="muted text-sm">Все домены и хостинги оформляются строго на вас. У вас будут все доступы, и вы не будете зависеть от разработчика.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Портфолио -->
+    <section id="work" class="py-10">
+      <h2 class="text-2xl font-bold mb-2">Примеры работ</h2>
+      <p class="muted mb-6">Это учебные демо-проекты, но сайты рабочие: нажмите кнопку, и сайт откроется прямо здесь.</p>
+      <div class="grid md:grid-cols-3 gap-5">
+        <article class="card flex flex-col">
+          <div class="h-32 rounded-xl mb-4 flex items-center justify-center text-4xl" style="background:#0f172a">🔧</div>
+          <h3 class="font-semibold text-lg">Автосервис «Мотор»</h3>
+          <p class="muted text-sm mb-4 flex-1">Сайт-визитка с ценами и онлайн-записью на ремонт.</p>
+          <button class="btn" data-open="auto">Посмотреть сайт</button>
+        </article>
+        <article class="card flex flex-col">
+          <div class="h-32 rounded-xl mb-4 flex items-center justify-center text-4xl" style="background:#e0f2fe">🧽</div>
+          <h3 class="font-semibold text-lg">Клининг «Чистый дом»</h3>
+          <p class="muted text-sm mb-4 flex-1">Сайт услуги с калькулятором стоимости уборки.</p>
+          <button class="btn" data-open="clean">Посмотреть сайт</button>
+        </article>
+        <article class="card flex flex-col">
+          <div class="h-32 rounded-xl mb-4 flex items-center justify-center text-4xl" style="background:#f5e1cf">🏺</div>
+          <h3 class="font-semibold text-lg">Каталог «Тёплая керамика»</h3>
+          <p class="muted text-sm mb-4 flex-1">Простой каталог товаров с фильтром и корзиной.</p>
+          <button class="btn" data-open="shop">Посмотреть сайт</button>
+        </article>
+      </div>
+    </section>
+
+    <!-- Как работаю -->
+    <section class="py-10">
+      <h2 class="text-2xl font-bold mb-4">Как мы будем работать</h2>
+      <ol class="grid md:grid-cols-4 gap-4">
+        <li class="card"><b>1. Разговор</b><p class="muted text-sm">Расскажете о бизнесе и о том, что нужно сайту.</p></li>
+        <li class="card"><b>2. Цена и сроки</b><p class="muted text-sm">Называю сумму и дату. Они не меняются.</p></li>
+        <li class="card"><b>3. Делаю</b><p class="muted text-sm">Показываю промежуточный результат, вносим правки.</p></li>
+        <li class="card"><b>4. Запуск</b><p class="muted text-sm">Настраиваю сервер, защищённое соединение и резервные копии, объясняю, как пользоваться.</p></li>
+      </ol>
+    </section>
+
+    <!-- Контакты -->
+    <section id="contact" class="py-10 pb-16">
+      <h2 class="text-2xl font-bold mb-2">Давайте обсудим ваш сайт</h2>
+      <p class="muted mb-6">Напишите пару строк о том, что нужно. Отвечу сам, обычно в течение дня.</p>
+      <div class="grid md:grid-cols-2 gap-6">
+        <form id="contact-form" class="card space-y-3">
+          <input id="c-name" class="field" placeholder="Как к вам обращаться?" required>
+          <input id="c-contact" class="field" placeholder="Телефон или Telegram" required>
+          <textarea id="c-text" class="field" rows="4" placeholder="Чем занимаетесь и какой сайт нужен?" required></textarea>
+          <button class="btn w-full" type="submit">Отправить письмом</button>
+          <p class="muted text-xs">Нажатие откроет ваш почтовый клиент с готовым письмом.</p>
+        </form>
+        <div class="card space-y-3">
+          <p class="muted">Или напишите напрямую:</p>
+          <a class="btn w-full" href="https://t.me/mrfjf" target="_blank" rel="noopener">@mrfjf</a>
+          <a class="btn btn-ghost w-full" href="mailto:aleksejsacnev8@gmail.com">aleksejsacnev8@gmail.com</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t py-6 text-center text-sm muted" style="border-color:var(--line)">© 2026 AS_Web · Алексей Шачнев<br><a class="underline" href="https://t.me/mrfjf" target="_blank" rel="noopener">@mrfjf</a> · <a class="underline" href="mailto:aleksejsacnev8@gmail.com">aleksejsacnev8@gmail.com</a></footer>
+</div>
+
+<!-- ================= СТРАНИЦА 2: АВТОСЕРВИС ================= -->
+<div id="view-auto" class="view hidden">
+  <div class="backbar"><button data-open="home">← Вернуться в портфолио</button><span>Демо-сайт: автосервис</span></div>
+  <div class="site site-auto">
+    <header class="max-w-5xl mx-auto px-4 py-5 flex justify-between items-center">
+      <b class="text-xl s-acc">МОТОР</b><a href="#auto-book" class="text-sm underline">Записаться</a>
+    </header>
+    <section class="max-w-5xl mx-auto px-4 py-14">
+      <h2 class="text-3xl md:text-5xl font-bold mb-4">Ремонт авто в вашем районе. Честно и по записи.</h2>
+      <p class="s-mut max-w-xl mb-6">Сначала диагностика, потом называем цену. Без вашего согласия ничего не меняем и не добавляем.</p>
+      <a href="#auto-book" class="s-btn">Записаться на ремонт</a>
+    </section>
+    <section class="max-w-5xl mx-auto px-4 py-8">
+      <h3 class="text-2xl font-bold mb-5">Услуги и цены</h3>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="s-card"><b>Диагностика</b><p class="s-mut text-sm">Компьютерная и осмотр ходовой</p><p class="s-acc font-bold mt-2">от 1 000 ₽</p></div>
+        <div class="s-card"><b>Замена масла</b><p class="s-mut text-sm">Масло и фильтр, работа включена</p><p class="s-acc font-bold mt-2">от 1 500 ₽</p></div>
+        <div class="s-card"><b>Тормоза</b><p class="s-mut text-sm">Колодки, диски, прокачка</p><p class="s-acc font-bold mt-2">от 2 500 ₽</p></div>
+        <div class="s-card"><b>Подвеска</b><p class="s-mut text-sm">Амортизаторы, рычаги, сайлентблоки</p><p class="s-acc font-bold mt-2">от 3 000 ₽</p></div>
+        <div class="s-card"><b>Шиномонтаж</b><p class="s-mut text-sm">Сезонная замена, балансировка</p><p class="s-acc font-bold mt-2">от 1 600 ₽</p></div>
+        <div class="s-card"><b>Кондиционер</b><p class="s-mut text-sm">Проверка и заправка</p><p class="s-acc font-bold mt-2">от 2 200 ₽</p></div>
+      </div>
+    </section>
+    <section class="max-w-5xl mx-auto px-4 py-8">
+      <h3 class="text-2xl font-bold mb-5">Как проходит ремонт</h3>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="s-card"><b class="s-acc">1.</b> Вы записываетесь и приезжаете в удобное время.</div>
+        <div class="s-card"><b class="s-acc">2.</b> Мастер смотрит машину и называет точную цену.</div>
+        <div class="s-card"><b class="s-acc">3.</b> Чиним, возвращаем старые детали и даём гарантию на работу.</div>
+      </div>
+    </section>
+    <section id="auto-book" class="max-w-xl mx-auto px-4 py-12">
+      <h3 class="text-2xl font-bold mb-4 text-center">Запись на ремонт</h3>
+      <form id="auto-form" class="s-card space-y-3">
+        <input class="s-field" placeholder="Ваше имя" required>
+        <input class="s-field" type="tel" placeholder="Телефон" required>
+        <select class="s-field"><option>Диагностика</option><option>Замена масла</option><option>Тормоза</option><option>Подвеска</option><option>Шиномонтаж</option><option>Другое</option></select>
+        <input class="s-field" type="date" required>
+        <button class="s-btn w-full" type="submit">Записаться</button>
+        <p id="auto-ok" class="hidden text-center font-bold" style="color:#16a34a">Заявка принята! Мы перезвоним и подтвердим время.</p>
+      </form>
+    </section>
+    <footer class="text-center s-mut text-sm py-8">г. Ваш город, ул. Гаражная, 12 · ежедневно 9:00–20:00 · +7 (900) 000-00-00</footer>
+  </div>
+</div>
+
+<!-- ================= СТРАНИЦА 3: КЛИНИНГ ================= -->
+<div id="view-clean" class="view hidden">
+  <div class="backbar"><button data-open="home">← Вернуться в портфолио</button><span>Демо-сайт: клининг</span></div>
+  <div class="site site-clean">
+    <header class="max-w-5xl mx-auto px-4 py-5 flex justify-between items-center">
+      <b class="text-xl s-acc">Чистый дом</b><a href="#clean-calc" class="text-sm underline">Рассчитать цену</a>
+    </header>
+    <section class="max-w-5xl mx-auto px-4 py-14 text-center">
+      <h2 class="text-3xl md:text-5xl font-bold mb-4">Уборка квартир и офисов</h2>
+      <p class="s-mut max-w-xl mx-auto mb-6">Приезжаем со своей химией и инвентарём. Цену считаете сами за минуту, дальше она не меняется.</p>
+      <a href="#clean-calc" class="s-btn">Узнать стоимость</a>
+    </section>
+    <section class="max-w-5xl mx-auto px-4 py-8">
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="s-card"><b>🏠 Поддерживающая</b><p class="s-mut text-sm">Пыль, полы, санузел, кухня. Для тех, кто убирается регулярно.</p></div>
+        <div class="s-card"><b>✨ Генеральная</b><p class="s-mut text-sm">Глубокая чистка всего: от плинтусов до вытяжки.</p></div>
+        <div class="s-card"><b>🔨 После ремонта</b><p class="s-mut text-sm">Вывоз мелкого мусора, отмывание от строительной пыли.</p></div>
+      </div>
+    </section>
+    <section id="clean-calc" class="max-w-xl mx-auto px-4 py-12">
+      <h3 class="text-2xl font-bold mb-4 text-center">Калькулятор уборки</h3>
+      <div class="s-card space-y-4">
+        <label class="block"><span class="font-semibold">Тип уборки</span>
+          <select id="calc-type" class="s-field mt-1"><option value="80">Поддерживающая — 80 ₽/м²</option><option value="140">Генеральная — 140 ₽/м²</option><option value="190">После ремонта — 190 ₽/м²</option></select></label>
+        <label class="block"><span class="font-semibold">Площадь: <span id="calc-area-val">50</span> м²</span>
+          <input id="calc-area" type="range" min="20" max="200" value="50" class="w-full mt-2"></label>
+        <label class="flex items-center gap-2"><input id="calc-win" type="checkbox"> Помыть окна (+1 500 ₽)</label>
+        <div class="text-center pt-2"><p class="s-mut text-sm">Примерная стоимость</p><p id="calc-total" class="text-4xl font-bold s-acc">4 000 ₽</p></div>
+      </div>
+    </section>
+    <section class="max-w-5xl mx-auto px-4 py-8">
+      <h3 class="text-2xl font-bold mb-5 text-center">Отзывы</h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="s-card"><p>«Приехали вовремя, всё отмыли. Цена совпала с калькулятором.»</p><p class="s-mut text-sm mt-2">— Марина, 2-комнатная квартира</p></div>
+        <div class="s-card"><p>«Заказывали после ремонта. Пыли не осталось, окна блестят.»</p><p class="s-mut text-sm mt-2">— Игорь, новая квартира</p></div>
+      </div>
+    </section>
+    <section class="max-w-xl mx-auto px-4 py-12 text-center">
+      <h3 class="text-2xl font-bold mb-4">Заказать уборку</h3>
+      <a href="tel:+79000000000" class="s-btn">Позвонить: +7 (900) 000-00-00</a>
+    </section>
+    <footer class="text-center s-mut text-sm py-8">Чистый дом · работаем с 8:00 до 21:00</footer>
+  </div>
+</div>
+
+<!-- ================= СТРАНИЦА 4: КАТАЛОГ ================= -->
+<div id="view-shop" class="view hidden">
+  <div class="backbar"><button data-open="home">← Вернуться в портфолио</button><span>Демо-сайт: каталог</span></div>
+  <div class="site site-shop">
+    <header class="max-w-5xl mx-auto px-4 py-5 flex justify-between items-center">
+      <b class="text-xl s-acc">Тёплая керамика</b>
+      <span class="s-card !py-2 !px-4 text-sm">🛒 В корзине: <b id="cart-count">0</b> · <b id="cart-sum">0 ₽</b></span>
+    </header>
+    <section class="max-w-5xl mx-auto px-4 py-10 text-center">
+      <h2 class="text-3xl md:text-4xl font-bold mb-3">Посуда ручной работы</h2>
+      <p class="s-mut mb-6">Каждая вещь сделана в небольшой мастерской. Цвета могут немного отличаться — это нормально.</p>
+      <div id="shop-filters" class="flex flex-wrap justify-center gap-2"></div>
+    </section>
+    <section class="max-w-5xl mx-auto px-4 pb-12">
+      <div id="shop-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+    </section>
+    <footer class="text-center s-mut text-sm py-8">Доставка по России · Заказ по телефону +7 (900) 000-00-00</footer>
+  </div>
+</div>
+
+<script>
+/* ============ 1. ПЕРЕКЛЮЧЕНИЕ СТРАНИЦ ============ */
+// Список всех «страниц». Каждому id соответствует блок <div id="view-...">
+const VIEWS = ['home', 'auto', 'clean', 'shop'];
+
+// Показываем одну страницу, остальные прячем
+function show(name) {
+  VIEWS.forEach(function (v) {
+    const el = document.getElementById('view-' + v);
+    if (v === name) {
+      el.classList.remove('hidden');
+      // Перезапускаем плавную анимацию появления
+      el.style.animation = 'none'; el.offsetHeight; el.style.animation = '';
+    } else {
+      el.classList.add('hidden');
+    }
+  });
+  window.scrollTo(0, 0);
+}
+
+// Любая кнопка с data-open="..." открывает нужную страницу
+document.addEventListener('click', function (e) {
+  const btn = e.target.closest('[data-open]');
+  if (btn) show(btn.dataset.open);
+});
+
+/* ============ 2. ФОРМА НА ГЛАВНОЙ: открывает письмо ============ */
+document.getElementById('contact-form').addEventListener('submit', function (e) {
+  e.preventDefault();
+  const name = document.getElementById('c-name').value;
+  const contact = document.getElementById('c-contact').value;
+  const text = document.getElementById('c-text').value;
+  const body = 'Имя: ' + name + '\nКонтакт: ' + contact + '\n\n' + text;
+  window.location.href = 'mailto:aleksejsacnev8@gmail.com?subject=' +
+    encodeURIComponent('Заявка с сайта AS_Web') + '&body=' + encodeURIComponent(body);
+});
+
+/* ============ 3. АВТОСЕРВИС: форма записи ============ */
+document.getElementById('auto-form').addEventListener('submit', function (e) {
+  e.preventDefault(); // не перезагружаем страницу
+  document.getElementById('auto-ok').classList.remove('hidden');
+  this.reset();
+});
+
+/* ============ 4. КЛИНИНГ: калькулятор ============ */
+const calcType = document.getElementById('calc-type');
+const calcArea = document.getElementById('calc-area');
+const calcWin = document.getElementById('calc-win');
+
+function updateCalc() {
+  const area = Number(calcArea.value);
+  let total = area * Number(calcType.value);
+  if (calcWin.checked) total += 1500;
+  document.getElementById('calc-area-val').textContent = area;
+  document.getElementById('calc-total').textContent = total.toLocaleString('ru-RU') + ' ₽';
+}
+[calcType, calcArea, calcWin].forEach(function (el) { el.addEventListener('input', updateCalc); });
+updateCalc();
+
+/* ============ 5. КАТАЛОГ: товары, фильтр, корзина ============ */
+const PRODUCTS = [
+  { name: 'Кружка «Утро»', cat: 'Кружки', price: 900, emoji: '☕' },
+  { name: 'Кружка большая', cat: 'Кружки', price: 1200, emoji: '🍵' },
+  { name: 'Тарелка обеденная', cat: 'Тарелки', price: 1100, emoji: '🍽️' },
+  { name: 'Миска для супа', cat: 'Тарелки', price: 950, emoji: '🥣' },
+  { name: 'Ваза «Колос»', cat: 'Декор', price: 2300, emoji: '🏺' },
+  { name: 'Подсвечник', cat: 'Декор', price: 750, emoji: '🕯️' },
+  { name: 'Чайник заварочный', cat: 'Кружки', price: 2800, emoji: '🫖' },
+  { name: 'Набор из 4 тарелок', cat: 'Тарелки', price: 3900, emoji: '🍽️' }
+];
+const CATS = ['Все', 'Кружки', 'Тарелки', 'Декор'];
+let activeCat = 'Все', cartCount = 0, cartSum = 0;
+
+function renderShop() {
+  // Кнопки фильтра
+  document.getElementById('shop-filters').innerHTML = CATS.map(function (c) {
+    const on = c === activeCat;
+    return '<button data-cat="' + c + '" class="px-4 py-2 rounded-full font-semibold border" style="' +
+      (on ? 'background:var(--s-acc);color:#fff;border-color:var(--s-acc)' : 'background:#fff;color:var(--s-fg);border-color:#e5d5c5') +
+      '">' + c + '</button>';
+  }).join('');
+  // Карточки товаров
+  document.getElementById('shop-grid').innerHTML = PRODUCTS
+    .map(function (p, i) { return { p: p, i: i }; })
+    .filter(function (x) { return activeCat === 'Все' || x.p.cat === activeCat; })
+    .map(function (x) {
+      return '<div class="s-card flex flex-col"><div class="h-24 rounded-xl flex items-center justify-center text-4xl mb-3" style="background:#f5e6d6">' + x.p.emoji +
+        '</div><b class="text-sm">' + x.p.name + '</b><p class="s-acc font-bold">' + x.p.price.toLocaleString('ru-RU') +
+        ' ₽</p><button data-add="' + x.i + '" class="s-btn !py-2 !px-3 text-sm mt-auto">В корзину</button></div>';
+    }).join('');
+}
+
+document.getElementById('view-shop').addEventListener('click', function (e) {
+  const cat = e.target.closest('[data-cat]');
+  const add = e.target.closest('[data-add]');
+  if (cat) { activeCat = cat.dataset.cat; renderShop(); }
+  if (add) {
+    cartCount += 1;
+    cartSum += PRODUCTS[Number(add.dataset.add)].price;
+    document.getElementById('cart-count').textContent = cartCount;
+    document.getElementById('cart-sum').textContent = cartSum.toLocaleString('ru-RU') + ' ₽';
+  }
+});
+renderShop();
+</script>
+</body>
+</html>
